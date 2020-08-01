@@ -78,8 +78,8 @@ def answerCallback(update, context):
     CallbackQuery.answer(query)
     keyboard = [
         [InlineKeyboardButton("Github", url=github_url),
-         InlineKeyboardButton("Pub.dev", url=pubdev_url)],
-        [InlineKeyboardButton("Back", callback_data="back")]
+         InlineKeyboardButton("Pub.dev", url=pubdev_url),
+         InlineKeyboardButton("Back", callback_data="back")]
     ]
     query.edit_message_text(
         text=msg_string,

@@ -62,9 +62,9 @@ def search_pubdev(update, context):
 @run_async
 def answerCallback(update, context):
     query = update.callback_query
-
     finalQuery = str(query.data).strip("callback_")
     data = fetch_pkg(finalQuery)
+
     version = data['pubspec']['version']
     description = data['pubspec']['description']
     deps = data['pubspec']['dependencies']
@@ -79,8 +79,7 @@ def answerCallback(update, context):
     keyboard = [
         [InlineKeyboardButton("Github", url=github_url),
          InlineKeyboardButton("Pub.dev", url=pubdev_url)],
-        [InlineKeyboardButton(
-            "Back", callback_data="back_{}".format(finalQuery))]
+        [InlineKeyboardButton("Back", callback_data="back")]
     ]
     query.edit_message_text(
         text=msg_string,

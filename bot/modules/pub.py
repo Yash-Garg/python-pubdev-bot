@@ -27,7 +27,8 @@ def fetch_pkg(k: str):
     pkgurl = base_url + "packages/" + k
     resp = requests.get(pkgurl, headers=headers)
     data = resp.json()
-    pkginfo = data['latest']
+    pkginfo = data['latest']['pubspec']
+    print(pkginfo)
     return pkginfo
 
 
@@ -62,15 +63,15 @@ def search_pubdev(update, context):
 @run_async
 def answerCallback(update, context):
     query = update.callback_query
-    finalQuery = str(query.data).strip("callback_")
+    finalQuery = str(query.data).replace("callback_", "")
     data = fetch_pkg(finalQuery)
 
-    version = data['pubspec']['version']
-    description = data['pubspec']['description']
-    deps = data['pubspec']['dependencies']
+    version = data['version']
+    description = data['description']
+    deps = data['dependencies']
     fdeps = ", ".join(deps)
-    pubdev_url = "https://pub.dev/packages/" + data['pubspec']['name']
-    github_url = data['pubspec']['homepage']
+    pubdev_url = "https://pub.dev/packages/" + data['name']
+    github_url = data['homepage']
 
     msg_string = f"""*Package name :* `{finalQuery}`\n*Latest version :* `{version}`
                     \n*Description :* `{description}`\n\n*Dependencies :* `{fdeps}`\n\n*Pubspec :* `{finalQuery} ^{version}`
@@ -90,6 +91,6 @@ def answerCallback(update, context):
 
 pub_handler = CommandHandler('pub', search_pubdev)
 callback_query_handler = CallbackQueryHandler(
-    answerCallback, pattern=f"callback_")
+    answerCallback, pattern=f"callback")
 dispatcher.add_handler(pub_handler)
 dispatcher.add_handler(callback_query_handler)

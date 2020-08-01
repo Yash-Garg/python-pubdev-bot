@@ -1,6 +1,6 @@
 from telegram.ext import CommandHandler, run_async
 from bot import dispatcher, updater, LOGGER
-from .modules import search
+from .modules import pub
 
 
 @run_async

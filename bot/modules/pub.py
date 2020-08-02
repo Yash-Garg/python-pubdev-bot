@@ -79,7 +79,7 @@ def answerCallback(update, context):
     keyboard = [
         [InlineKeyboardButton("Github", url=github_url),
          InlineKeyboardButton("Pub.dev", url=pubdev_url),
-         InlineKeyboardButton("Back", callback_data="back")]
+         ]
     ]
     query.edit_message_text(
         text=msg_string,
@@ -88,21 +88,8 @@ def answerCallback(update, context):
     )
 
 
-@run_async
-def answerBackQuery(update, context):
-    query = update.callback_query
-    CallbackQuery.answer(query)
-    query.edit_message_text(
-        text="*Pressed back button\!*",
-        parse_mode=ParseMode.MARKDOWN_V2,
-    )
-
-
 pub_handler = CommandHandler('pub', search_pubdev)
 callback_query_handler = CallbackQueryHandler(
     answerCallback, pattern=f"callback_")
-back_query_handler = CallbackQueryHandler(
-    answerBackQuery, pattern=f"back")
 dispatcher.add_handler(pub_handler)
 dispatcher.add_handler(callback_query_handler)
-dispatcher.add_handler(back_query_handler)

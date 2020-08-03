@@ -1,5 +1,6 @@
 import requests
 import telegram
+import string
 import re
 
 from bot import LOGGER, dispatcher
@@ -69,7 +70,7 @@ def answerCallback(update, context):
     data = fetch_pkg(finalQuery)
 
     version = data['version']
-    description = data['description']
+    description = data['description'].rstrip()
     pubdev_url = "https://pub.dev/packages/" + data['name']
     github_url = data['homepage']
 

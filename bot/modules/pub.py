@@ -70,13 +70,11 @@ def answerCallback(update, context):
 
     version = data['version']
     description = data['description']
-    deps = data['dependencies']
-    fdeps = ", ".join(deps)
     pubdev_url = "https://pub.dev/packages/" + data['name']
     github_url = data['homepage']
 
     msg_string = f"""*Package name :* `{finalQuery}`\n*Latest version :* `{version}`
-                    \n*Description :* `{description}`\n\n*Dependencies :* `{fdeps}`\n\n*Pubspec :* `{finalQuery} ^{version}`
+                    \n*Description :* `{description}`\n\n*Pubspec :* `{finalQuery} ^{version}`
                 """
     CallbackQuery.answer(query)
     keyboard = [

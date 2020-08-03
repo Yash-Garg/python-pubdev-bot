@@ -11,6 +11,8 @@ base_url = 'https://pub.dev/api/'
 
 headers = {"content-Type": "application/json"}
 
+result_keyboard = []
+
 
 def fetch_results(q: str):
     search_url = base_url + "search?q=" + q
@@ -46,13 +48,13 @@ def search_pubdev(update, context):
     all_queries = update.message.text.split(" ")
     query = " ".join(all_queries[1:])
     LOGGER.info(f"Searching: {query}")
+    global result_keyboard
     result_keyboard = fetch_results(query)
     if result_keyboard == 'err':
         context.bot.sendMessage(chat_id=update.effective_chat.id,
                                 text="No packages available for your search query!",
                                 reply_to_message_id=update.message.message_id)
     else:
-
         context.bot.sendMessage(chat_id=update.effective_chat.id,
                                 text="*Available packages for your search query :*",
                                 reply_to_message_id=update.message.message_id,
@@ -95,8 +97,9 @@ def answerBackQuery(update, context):
     query = update.callback_query
     CallbackQuery.answer(query)
     query.edit_message_text(
-        text="*Pressed back button\!*",
+        text="*Available packages for your search query :*",
         parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=result_keyboard
     )
 
 

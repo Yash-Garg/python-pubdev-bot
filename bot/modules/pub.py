@@ -16,11 +16,21 @@ def fetch_results(q: str):
     search_url = base_url + "search?q=" + q
     response = requests.get(search_url, headers=headers)
     data = response.json()
+    templist = []
+    finalList = []
+    keyboard = []
     if len(data['packages']) == 0:
         return "err"
     else:
         pkgdata = data['packages']
-        return pkgdata
+        for i in range(0, len(pkgdata)):
+            templist.append(pkgdata[i]['package'])
+        finalList = templist[0:5]
+        for i in range(len(finalList)):
+            keyboard = keyboard + \
+                [[InlineKeyboardButton(
+                    finalList[i], callback_data="callback_{}".format(finalList[i]))]]
+        return InlineKeyboardMarkup(keyboard)
 
 
 def fetch_pkg(k: str):
@@ -35,27 +45,18 @@ def fetch_pkg(k: str):
 def search_pubdev(update, context):
     all_queries = update.message.text.split(" ")
     query = " ".join(all_queries[1:])
-    templist = []
-    finalList = []
-    keyboard = []
     LOGGER.info(f"Searching: {query}")
-    results = fetch_results(query)
-    if results == 'err':
+    result_keyboard = fetch_results(query)
+    if result_keyboard == 'err':
         context.bot.sendMessage(chat_id=update.effective_chat.id,
                                 text="No packages available for your search query!",
                                 reply_to_message_id=update.message.message_id)
     else:
-        for i in range(0, len(results)):
-            templist.append(results[i]['package'])
-        finalList = templist[0:5]
-        for i in range(len(finalList)):
-            keyboard = keyboard + \
-                [[InlineKeyboardButton(
-                    finalList[i], callback_data="callback_{}".format(finalList[i]))]]
+
         context.bot.sendMessage(chat_id=update.effective_chat.id,
                                 text="*Available packages for your search query :*",
                                 reply_to_message_id=update.message.message_id,
-                                reply_markup=InlineKeyboardMarkup(keyboard),
+                                reply_markup=result_keyboard,
                                 parse_mode=ParseMode.MARKDOWN_V2)
 
 
@@ -79,6 +80,7 @@ def answerCallback(update, context):
     keyboard = [
         [InlineKeyboardButton("Github", url=github_url),
          InlineKeyboardButton("Pub.dev", url=pubdev_url),
+         InlineKeyboardButton("Back", callback_data="back"),
          ]
     ]
     query.edit_message_text(
@@ -88,8 +90,21 @@ def answerCallback(update, context):
     )
 
 
+@run_async
+def answerBackQuery(update, context):
+    query = update.callback_query
+    CallbackQuery.answer(query)
+    query.edit_message_text(
+        text="*Pressed back button\!*",
+        parse_mode=ParseMode.MARKDOWN_V2,
+    )
+
+
 pub_handler = CommandHandler('pub', search_pubdev)
 callback_query_handler = CallbackQueryHandler(
     answerCallback, pattern=f"callback_")
+back_query_handler = CallbackQueryHandler(
+    answerBackQuery, pattern=f"back")
 dispatcher.add_handler(pub_handler)
 dispatcher.add_handler(callback_query_handler)
+dispatcher.add_handler(back_query_handler)

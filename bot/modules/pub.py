@@ -1,10 +1,7 @@
 import requests
-import telegram
-import string
-import re
 
 from bot import LOGGER, dispatcher
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, User, CallbackQuery, Message, Chat, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, CallbackQuery
 from telegram.ext import CommandHandler, run_async, CallbackQueryHandler
 
 
@@ -26,7 +23,7 @@ def fetch_results(q: str):
         return "err"
     else:
         pkgdata = data['packages']
-        for i in range(0, len(pkgdata)):
+        for i in range(len(pkgdata)):
             templist.append(pkgdata[i]['package'])
         finalList = templist[0:5]
         for i in range(len(finalList)):
@@ -44,7 +41,6 @@ def fetch_pkg(k: str):
     return pkginfo
 
 
-@run_async
 def search_pubdev(update, context):
     all_queries = update.message.text.split(" ")
     query = " ".join(all_queries[1:])
@@ -63,7 +59,6 @@ def search_pubdev(update, context):
                                 parse_mode=ParseMode.MARKDOWN_V2)
 
 
-@run_async
 def answerCallback(update, context):
     query = update.callback_query
     finalQuery = str(query.data).replace("callback_", "")
@@ -91,7 +86,6 @@ def answerCallback(update, context):
     )
 
 
-@run_async
 def answerBackQuery(update, context):
     query = update.callback_query
     CallbackQuery.answer(query)
@@ -102,11 +96,11 @@ def answerBackQuery(update, context):
     )
 
 
-pub_handler = CommandHandler('pub', search_pubdev)
+pub_handler = CommandHandler('pub', search_pubdev, run_async=True)
 callback_query_handler = CallbackQueryHandler(
-    answerCallback, pattern=f"callback_")
+    answerCallback, pattern=f'{"callback_"}', run_async=True)
 back_query_handler = CallbackQueryHandler(
-    answerBackQuery, pattern=f"back")
+    answerBackQuery, pattern=f'{"back"}', run_async=True)
 dispatcher.add_handler(pub_handler)
 dispatcher.add_handler(callback_query_handler)
 dispatcher.add_handler(back_query_handler)

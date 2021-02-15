@@ -2,7 +2,7 @@ import requests
 
 from bot import LOGGER, dispatcher
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, CallbackQuery
-from telegram.ext import CommandHandler, run_async, CallbackQueryHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler
 
 
 base_url = 'https://pub.dev/api/'
